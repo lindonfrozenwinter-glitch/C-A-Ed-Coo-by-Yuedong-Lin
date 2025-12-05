@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements - China-Australia Educational Cooperation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/anime.min.js"></script>
+    <script src="js/splide.min.js"></script>
+    <link href="css/splide.min.css" rel="stylesheet">
+    <script src="js/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --warm-orange: #f59e0b;
+            --neutral-gray: #374151;
+            --ivory-white: #fefefe;
+            --emerald-green: #059669;
+        }
+        
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .page-title {
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--primary-blue), var(--warm-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary-blue), var(--warm-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: blur(20px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--warm-orange);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--warm-orange));
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .metric-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-blue), var(--warm-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            text-shadow: 0 0 30px rgba(30, 58, 138, 0.3);
+        }
+        
+        .text-shimmer {
+            background: linear-gradient(-45deg, var(--primary-blue), var(--warm-orange), var(--primary-blue), var(--warm-orange));
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .hover-3d {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+        
+        .hover-3d:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(5deg) translateZ(20px);
+        }
+        
+        .glow-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .glow-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .glow-button:hover::before {
+            left: 100%;
+        }
+        
+        .glow-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        .light-ray {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(245, 158, 11, 0.6), transparent);
+            animation: light-ray-move 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes light-ray-move {
+            0%, 100% { transform: translateX(-50px) rotate(0deg); opacity: 0; }
+            50% { transform: translateX(50px) rotate(180deg); opacity: 1; }
+        }
+        
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: particle-float 8s infinite linear;
+        }
+        
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) translateX(0px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .magnetic-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            opacity: 0;
+        }
+        
+        .magnetic-cursor.active {
+            opacity: 1;
+        }
+        
+        .timeline-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-blue), var(--warm-orange));
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin: 3rem 0;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .timeline-item.animate {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s ease;
+        }
+        
+        .timeline-content {
+            width: 45%;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: auto;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--warm-orange);
+            border: 4px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .case-study-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .case-study-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .gallery-image {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .gallery-image img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <!-- Magnetic Cursor -->
+    <div class="magnetic-cursor" id="magneticCursor"></div>
+    
+    <!-- Particle Container -->
+    <div class="particle-container" id="particleContainer"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-orange-500 rounded-full"></div>
+                    <span class="text-xl font-semibold text-gray-900">China-Australia Education</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 font-medium">Home</a>
+                    <a href="speech.html" class="nav-link text-gray-700 font-medium">Speech</a>
+                    <a href="achievements.html" class="nav-link text-orange-600 font-medium">Achievements</a>
+                </div>
+                <button class="md:hidden p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-24 pb-12 bg-gradient-to-r from-blue-50 to-purple-50 relative overflow-hidden">
+        <div class="light-ray absolute top-1/4 left-1/6"></div>
+        <div class="light-ray absolute top-1/3 right-1/4" style="animation-delay: -2s;"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="page-title text-4xl md:text-6xl font-bold mb-6">
+                Partnership Achievements
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Explore the remarkable outcomes of two decades of China-Australia educational cooperation through data, case studies, and success stories
+            </p>
+        </div>
+    </section>
+
+    <!-- Key Metrics -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4 text-shimmer">Partnership Impact</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Quantifying the success of our educational collaboration across multiple dimensions
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                <div class="metric-card hover-3d">
+                    <div class="metric-number" data-target="50000">0</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Students Exchanged</h3>
+                    <p class="text-gray-600 text-sm">Building global citizens through cross-cultural education</p>
+                </div>
+                
+                <div class="metric-card hover-3d">
+                    <div class="metric-number" data-target="150">0</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Joint Programs</h3>
+                    <p class="text-gray-600 text-sm">Including 2+2, 3+1, and research collaborations</p>
+                </div>
+                
+                <div class="metric-card hover-3d">
+                    <div class="metric-number" data-target="89">0</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Partner Universities</h3>
+                    <p class="text-gray-600 text-sm">Across both nations forming a comprehensive network</p>
+                </div>
+                
+                <div class="metric-card hover-3d">
+                    <div class="metric-number" data-target="1200">0</div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Research Papers</h3>
+                    <p class="text-gray-600 text-sm">Co-authored publications in top-tier journals</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Visualization -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4 text-shimmer">Data Insights</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Visualizing the growth and impact of our educational partnership
+                </p>
+            </div>
+            
+            <!-- Student Flow Chart -->
+            <div class="chart-container">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Student Exchange Flow (2020-2025)</h3>
+                <div id="studentFlowChart" style="height: 400px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 8px;">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <p class="text-gray-600">Loading chart...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Program Growth Chart -->
+            <div class="chart-container">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Joint Program Growth Timeline</h3>
+                <div id="programGrowthChart" style="height: 400px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 8px;">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+                        <p class="text-gray-600">Loading chart...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Research Distribution -->
+            <div class="chart-container">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Research Collaboration by Field</h3>
+                <div id="researchDistributionChart" style="height: 400px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 8px;">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                        <p class="text-gray-600">Loading chart...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4 text-shimmer">Partnership Timeline</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Key milestones in the evolution of China-Australia educational cooperation
+                </p>
+            </div>
+            
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">2004</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Partnership Foundation</h3>
+                        <p class="text-gray-600 mb-3">Initial educational exchanges established between key institutions, marking the beginning of formal cooperation.</p>
+                        <div class="text-sm text-blue-600 font-medium">5 partner universities • 200 students exchanged</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full">2010</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">First Joint Programs</h3>
+                        <p class="text-gray-600 mb-3">Launch of pioneering 2+2 and 3+1 joint degree programs, creating new pathways for students.</p>
+                        <div class="text-sm text-orange-600 font-medium">15 joint programs • 1,500 students enrolled</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">2015</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Free Trade Agreement Impact</h3>
+                        <p class="text-gray-600 mb-3">China-Australia Free Trade Agreement leads to 20% increase in joint program enrollment and expanded research collaboration.</p>
+                        <div class="text-sm text-green-600 font-medium">45 joint programs • 8,000 annual exchanges</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">2020</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Pandemic Resilience</h3>
+                        <p class="text-gray-600 mb-3">Successful pivot to virtual collaboration models during COVID-19, maintaining program continuity and even accelerating innovation.</p>
+                        <div class="text-sm text-purple-600 font-medium">120 joint programs • 15,000 virtual exchanges</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full">2024</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">MOU Renewal</h3>
+                        <p class="text-gray-600 mb-3">Memorandum of Understanding renewal sets clear direction for the next phase of cooperation and expanded collaboration.</p>
+                        <div class="text-sm text-red-600 font-medium">150 joint programs • 25,000 annual exchanges</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-teal-100 text-teal-800 text-sm font-medium px-3 py-1 rounded-full">2025</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Future Leaders Summit</h3>
+                        <p class="text-gray-600 mb-3">Universities Australia delegation visit demonstrates shared commitment to building stronger bridges and developing future leaders.</p>
+                        <div class="text-sm text-teal-600 font-medium">89 partner universities • 50,000 total exchanges</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case Studies -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4 text-shimmer">Success Stories</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Highlighting exemplary programs and initiatives that showcase the best of our partnership
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                <div class="case-study-card">
+                    <img src="./resources/medical-lab.jpg" alt="Medical Research Collaboration" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Guizhou Medical University & University of Queensland</h3>
+                        <p class="text-gray-600 mb-4">The 2+2 program in Biotechnology and Food Science has produced over 500 graduates with dual degrees, creating a model for successful international collaboration.</p>
+                        <div class="flex items-center text-sm text-blue-600 font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            500+ graduates • 95% employment rate
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="case-study-card">
+                    <img src="./resources/students-exchange.jpg" alt="Student Exchange Program" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Australia-China Youth Dialogue</h3>
+                        <p class="text-gray-600 mb-4">This initiative has brought together over 2,000 young leaders from both countries, fostering cross-cultural understanding and building networks for the future.</p>
+                        <div class="flex items-center text-sm text-green-600 font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            2,000+ participants • 15 years running
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="case-study-card">
+                    <img src="./resources/ceremony.jpg" alt="Research Collaboration" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Joint Research Excellence</h3>
+                        <p class="text-gray-600 mb-4">Collaborative research in medicine and environmental science has resulted in breakthrough discoveries and over 1,200 co-authored publications in top-tier journals.</p>
+                        <div class="flex items-center text-sm text-purple-600 font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
+                            1,200+ publications • 50+ joint labs
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Gallery -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4 text-shimmer">Partnership in Action</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Visual highlights from our collaborative programs and initiatives
+                </p>
+            </div>
+            
+            <div class="image-gallery">
+                <div class="gallery-image">
+                    <img src="./resources/hero-cooperation.jpg" alt="Partnership Ceremony" class="w-full h-full object-cover">
+                </div>
+                <div class="gallery-image">
+                    <img src="./resources/medical-lab.jpg" alt="Medical Research Lab" class="w-full h-full object-cover">
+                </div>
+                <div class="gallery-image">
+                    <img src="./resources/students-exchange.jpg" alt="Student Exchange" class="w-full h-full object-cover">
+                </div>
+                <div class="gallery-image">
+                    <img src="./resources/ceremony.jpg" alt="Graduation Ceremony" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Outlook -->
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-700 relative overflow-hidden">
+        <div class="light-ray absolute top-1/4 left-1/6"></div>
+        <div class="light-ray absolute bottom-1/4 right-1/6" style="animation-delay: -3s;"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-white">
+                <h2 class="text-4xl font-bold mb-6">Future Horizons</h2>
+                <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                    The next decade promises even greater achievements as we expand digital learning, develop new joint programs, and deepen research collaborations to address global challenges.
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-8 mt-12">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Digital Innovation</h3>
+                        <p class="text-blue-100">Expanding virtual collaboration and hybrid learning models</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Program Expansion</h3>
+                        <p class="text-blue-100">Launching new interdisciplinary and professional programs</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Global Solutions</h3>
+                        <p class="text-blue-100">Addressing climate change, health, and technology challenges</p>
+                    </div>
+                </div>
+                
+                <div class="mt-12 text-center">
+                    <a href="speech.html" class="glow-button inline-flex items-center bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105">
+                        Learn More About Our Vision
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-orange-400 rounded-full"></div>
+                    <span class="text-xl font-semibold">China-Australia Education</span>
+                </div>
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Fostering educational excellence and international cooperation between China and Australia
+                </p>
+                <div class="border-t border-gray-800 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2025 Yuedong Lin. All rights reserved. Designed and developed by Yuedong Lin. For Group Assignment Completion Only
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
